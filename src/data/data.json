@@ -1,0 +1,6 @@
+{ "data":[
+    {"id": 1, "title": "Admins", "roles": ["pizza editor", "Poler cheater"]}, 
+    {"id": 2, "title": "General Manager"},
+    {"id": 3, "title": "Manager - Tech"},
+    {"id": 4, "title": "Manager - Billing"}
+    ]}
