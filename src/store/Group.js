@@ -75,6 +75,7 @@ export default {
     async gettingData({ commit }) {
       let data = await dataGroup();
       commit("setData", data);
+      commit("setPages");
     },
     setDynamicArr({ commit }, data) {
       commit("setDynamicArr", data);

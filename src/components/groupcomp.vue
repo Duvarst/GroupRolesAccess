@@ -92,8 +92,7 @@ export default {
     ...mapGetters("group", { pages: "pages" }),
     ...mapGetters("group", { page: "page" }),
     displayGroup() {
-      // return this.paginate(this.allData);
-      if (this.searchResultData.length > 0) {
+      if (this.searchResultData && this.searchResultData.length > 0) {
         return this.paginate(this.searchResultData);
       } else {
         return this.paginate(this.allData);
