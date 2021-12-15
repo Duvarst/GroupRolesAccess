@@ -162,7 +162,6 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.newGlobalId(null);
-      this.setPages();
       this.newSearchData([]);
     });
   },

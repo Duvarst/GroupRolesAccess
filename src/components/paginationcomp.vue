@@ -13,15 +13,15 @@
   </div>
 </template>
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 export default {
   methods: {
     pagesClick(val) {
       this.$emit("pagetransition", val);
       this.activePage();
     },
-    activePage() {
-      let arr = [...this.$refs.blockPage.children];
+    async activePage() {
+      let arr = await [...this.$refs.blockPage.children];
       arr.forEach((el) => {
         if (el.classList.contains("pg_items")) {
           el.classList.remove("active");
