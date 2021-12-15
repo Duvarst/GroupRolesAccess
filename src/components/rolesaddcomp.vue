@@ -11,12 +11,12 @@
         />
         <label for="chbx">{{ it }}</label>
       </div>
-      <div class="add_roles" @click="addNewRoles(globalId)">Add</div>
+      <div class="add_roles" @click="addNewRoles()">Add</div>
     </div>
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   props: {
@@ -28,30 +28,27 @@ export default {
     };
   },
   methods: {
-    ...mapActions("group", { newGlobalArr: "newGlobalArr" }),
     windclose() {
       this.$emit("closewindowrol");
     },
-    addNewRoles(ind) {
-      let rolesIngroup = this.allGroup.find((el) => el.id === ind);
-      rolesIngroup.roles = this.checkedRolesArr;
-      this.windclose();
+    addNewRoles() {
+      this.$emit("rolesadd", this.checkedRolesArr);
+      // this.windclose();
       this.checkedRolesArr = [];
-      this.newGlobalArr(this.allGroup);
     },
-    checkeRole() {
-      let rolesIngroup = this.allGroup.find((el) => el.id === this.globalId);
+    checkedRole() {
+      let rolesIngroup = this.allData.find((el) => el.id === this.globalId);
       this.checkedRolesArr = rolesIngroup.roles;
     },
   },
   computed: {
-    ...mapGetters("group", { allGroup: "allGroup" }),
+    ...mapGetters("group", { allData: "allData" }),
     ...mapGetters("roles", { allRoles: "allRoles" }),
     ...mapGetters("group", { globalId: "globalId" }),
   },
   watch: {
     flagRole() {
-      this.checkeRole();
+      this.checkedRole();
     },
   },
 };

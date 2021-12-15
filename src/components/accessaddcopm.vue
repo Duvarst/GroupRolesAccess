@@ -11,7 +11,7 @@
         />
         <label for="chbx">{{ it }}</label>
       </div>
-      <div class="add_access" @click="addNewAccess(globalId)">Add</div>
+      <div class="add_access" @click="addNewAccess()">Add</div>
     </div>
   </div>
 </template>
@@ -31,20 +31,18 @@ export default {
     windclose() {
       this.$emit("closewindowAcc");
     },
-    addNewAccess(ind) {
-      let accessIngroup = this.allGroup.find((el) => el.id === ind);
-      accessIngroup.accessright = this.checkedAccessArr;
-      this.windclose();
+    addNewAccess() {
+      this.$emit("addaccess", this.checkedAccessArr);
+      // this.windclose();
       this.checkedAccessArr = [];
-      this.newGlobalArr(this.allGroup);
     },
     checkedAcc() {
-      let accessIngroup = this.allGroup.find((el) => el.id === this.globalId);
+      let accessIngroup = this.allData.find((el) => el.id === this.globalId);
       this.checkedAccessArr = accessIngroup.accessright;
     },
   },
   computed: {
-    ...mapGetters("group", { allGroup: "allGroup" }),
+    ...mapGetters("group", { allData: "allData" }),
     ...mapGetters("access", { allAccess: "allAccess" }),
     ...mapGetters("group", { globalId: "globalId" }),
   },

@@ -5,26 +5,60 @@ export default {
   state: {
     data: [],
     id: null,
-    groupGlobalArr: [],
-    inputGlobalVal: "",
-    searchTypeGlobal: "",
+    searchResultData: [],
     pages: [],
     page: 1,
     itemsPerPage: 6,
-    arrForDisplay: [],
   },
   getters: {
-    allGroup: (state) => state.data,
+    allData: (state) => state.data,
     globalId: (state) => state.id,
-    groupGlobalArr: (state) => state.groupGlobalArr,
-    inputGlobalVal: (state) => state.inputGlobalVal,
-    searchTypeGlobal: (state) => state.searchTypeGlobal,
+    searchResultData: (state) => state.searchResultData,
     pages: (state) => state.pages,
     page: (state) => state.page,
     itemsPerPage: (state) => state.itemsPerPage,
-    arrForDisplay: (state) => state.arrForDisplay,
   },
   mutations: {
+    addNewGroup(state, obj) {
+      state.data.push(obj);
+    },
+    deleteGroup(state) {
+      let indexGroup = state.data.findIndex((e) => e.id === state.id);
+      state.data.splice(indexGroup, 1);
+      state.id = null;
+    },
+
+    addNewTitle(state, val) {
+      let itemGroup = state.data.find((el) => el.id === state.id);
+      itemGroup.title = val;
+    },
+    addRolesInGroup(state, val) {
+      let rolesIngroup = state.data.find((el) => el.id === state.id);
+      rolesIngroup.roles = val;
+    },
+    addAccessInGroup(state, val) {
+      console.log(state.groupGlobalArr);
+      let accessIngroup = state.data.find((el) => el.id === state.id);
+      accessIngroup.accessright = val;
+    },
+
+    pageNumbers(state, val) {
+      state.page = val;
+    },
+    setPages(state) {
+      let pageNumbers = Math.ceil(state.data.length / state.itemsPerPage);
+      let arr = [];
+      for (let ind = 1; ind <= pageNumbers; ind++) {
+        arr.push(ind);
+      }
+      state.pages = arr;
+    },
+    newGlobalId(state, id) {
+      state.id = id;
+    },
+    newSearchData(state, val) {
+      state.searchResultData = val;
+    },
     setData(state, data) {
       let arr = [];
       data.forEach((item) => {
@@ -32,34 +66,7 @@ export default {
       });
       state.data = arr;
     },
-    changingArrForDisplay(state, val) {
-      state.arrForDisplay = val;
-    },
-    pageNumbers(state, val) {
-      state.page = val;
-    },
-    setPages(state) {
-      let pageNumbers = Math.ceil(
-        state.groupGlobalArr.length / state.itemsPerPage
-      );
-      let arr = [];
-      for (let ind = 1; ind <= pageNumbers; ind++) {
-        arr.push(ind);
-      }
-      state.pages = arr;
-    },
-    newGlobalId(state, val) {
-      state.id = val;
-    },
-    newGlobalArr(state, val) {
-      state.groupGlobalArr = val;
-    },
-    newInputGlobalVal(state, val) {
-      state.inputGlobalVal = val;
-    },
-    newSearchTypeGlobal(state, val) {
-      state.searchTypeGlobal = val;
-    },
+
     extractData(state, data) {
       this.replaceState(Object.assign(state, data));
     },
@@ -69,30 +76,40 @@ export default {
       let data = await dataGroup();
       commit("setData", data);
     },
-    changingArrForDisplay({ commit }, val) {
-      commit("changingArrForDisplay", val);
+    setDynamicArr({ commit }, data) {
+      commit("setDynamicArr", data);
+    },
+    addNewGroup({ commit }, obj) {
+      commit("addNewGroup", obj);
+      commit("setPages");
+    },
+    deleteGroup({ commit }) {
+      commit("deleteGroup");
+      commit("setPages");
+    },
+    addNewTitle({ commit }, val) {
+      commit("addNewTitle", val);
+    },
+    addRolesInGroup({ commit }, val) {
+      commit("addRolesInGroup", val);
+    },
+    addAccessInGroup({ commit }, val) {
+      commit("addAccessInGroup", val);
     },
     pageNumbers({ commit }, val) {
       commit("pageNumbers", val);
+      commit("newGlobalId", null);
     },
     setPages({ commit }) {
       commit("setPages");
     },
-    newGroupForData({ commit }, val) {
-      commit("newGroupForData", val);
+    newGlobalId({ commit }, id) {
+      commit("newGlobalId", id);
     },
-    newGlobalId({ commit }, val) {
-      commit("newGlobalId", val);
+    newSearchData({ commit }, val) {
+      commit("newSearchData", val);
     },
-    newGlobalArr({ commit }, val) {
-      commit("newGlobalArr", val);
-    },
-    newInputGlobalVal({ commit }, val) {
-      commit("newInputGlobalVal", val);
-    },
-    newSearchTypeGlobal({ commit }, val) {
-      commit("newSearchTypeGlobal", val);
-    },
+
     async extractData({ commit }) {
       if (localStorage.getItem("fulldata")) {
         let data = await JSON.parse(localStorage.getItem("fulldata"));

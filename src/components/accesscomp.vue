@@ -15,11 +15,11 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("group", { allGroup: "allGroup" }),
+    ...mapGetters("group", { allData: "allData" }),
     ...mapGetters("group", { globalId: "globalId" }),
     accessComp() {
       if (this.globalId !== null) {
-        return this.allGroup.find((el) => el.id === this.globalId).accessright;
+        return this.allData.find((el) => el.id === this.globalId).accessright;
       }
     },
     showAddAccess() {

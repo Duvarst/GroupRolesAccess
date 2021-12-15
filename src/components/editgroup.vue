@@ -12,12 +12,10 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters } from "vuex";
 export default {
   props: {
     flagEdit: Boolean,
-    id: Number,
-    value: String,
   },
   data: function () {
     return {
@@ -25,29 +23,19 @@ export default {
     };
   },
   methods: {
-    ...mapActions("group", { newGlobalId: "newGlobalId" }),
-    ...mapActions("group", { newGlobalArr: "newGlobalArr" }),
-    ...mapActions("group", { setPages: "setPages" }),
     deleteGroup() {
-      let itemGroup = this.allGroup.findIndex((e) => e.id === this.id);
-      this.allGroup.splice(itemGroup, 1);
+      this.$emit("delgroup");
       this.newTitle = "";
-      this.newGlobalId(null);
-      this.windclose();
-      this.setPages();
     },
     windclose() {
-      this.$emit("closewindowGroup");
+      this.$emit("closeeditwindow");
     },
     addNewTitle() {
-      let itemGroup = this.allGroup.find((el) => el.id === this.id);
-      itemGroup.title = this.newTitle;
-      this.windclose();
+      this.$emit("addtitle", this.newTitle);
       this.newTitle = "";
-      this.newGlobalArr(this.allGroup);
     },
     originalTitle() {
-      let itemGroup = this.allGroup.find((el) => el.id === this.id);
+      let itemGroup = this.allData.find((el) => el.id === this.globalId);
       this.newTitle = itemGroup.title;
       this.$nextTick(() => {
         this.$refs.inputEdit.focus();
@@ -56,7 +44,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters("group", { allGroup: "allGroup" }),
+    ...mapGetters("group", { allData: "allData" }),
     ...mapGetters("group", { globalId: "globalId" }),
   },
   watch: {

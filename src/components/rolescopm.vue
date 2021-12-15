@@ -18,12 +18,11 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("group", { allGroup: "allGroup" }),
-    ...mapGetters("roles", { allRoles: "allRoles" }),
+    ...mapGetters("group", { allData: "allData" }),
     ...mapGetters("group", { globalId: "globalId" }),
     arrRolesComp() {
       if (this.globalId !== null) {
-        return this.allGroup.find((el) => el.id === this.globalId).roles;
+        return this.allData.find((el) => el.id === this.globalId).roles;
       }
     },
     showAddRoles() {

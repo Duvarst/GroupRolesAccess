@@ -1,20 +1,24 @@
 <template>
-  <input
-    type="text"
-    v-model="inputVal"
-    @input="searchInGroup"
-    ref="inputsearch"
-  />
-  <select name="" id="" v-model="searchType">
-    <option disabled value="">Select the search type</option>
-    <option value="group">Search Group</option>
-    <option value="roles">Search Roles</option>
-    <option value="access">Search access</option>
-  </select>
+  <div class="search-wrap">
+    <input
+      type="text"
+      v-model="inputVal"
+      @input="searchEvent"
+      ref="inputsearch"
+    />
+    <select name="" id="" v-model="searchType">
+      <option disabled value="">Select the search type</option>
+      <option value="group">Search Group</option>
+      <option value="roles">Search Roles</option>
+      <option value="access">Search access</option>
+    </select>
+    <button class="btn" @click="cancelInput">Cancel</button>
+  </div>
 </template>
 <script>
 import { mapActions, mapGetters } from "vuex";
 export default {
+  emits: ["searchresult"],
   data: function () {
     return {
       inputVal: "",
@@ -27,19 +31,20 @@ export default {
     ...mapActions("group", { setPages: "setPages" }),
     ...mapActions("group", { changingArrForDisplay: "changingArrForDisplay" }),
     ...mapActions("group", { newGlobalId: "newGlobalId" }),
-    values() {
-      this.newInputGlobalVal(this.inputVal);
-    },
     disabledInput() {
       if (this.searchType !== "") {
         this.$refs.inputsearch.disabled = false;
+        this.inputVal = "";
+        this.searchEvent();
       }
+    },
+    cancelInput() {
+      this.inputVal = "";
+      this.searchEvent();
     },
     searchInGroup() {
       if (this.inputVal !== "") {
-        this.pageNumbers(1);
-        this.newGlobalId(null);
-        let obj = this.allGroup;
+        let obj = this.allData;
         let search = this.inputVal.toLowerCase();
         let arr = [];
         if (this.searchType === "group") {
@@ -74,20 +79,20 @@ export default {
           });
         }
 
-        this.newGlobalArr(arr);
+        return arr;
       } else {
-        this.newGlobalArr(this.allGroup);
+        let arr = [];
+        return arr;
       }
+    },
+    searchEvent() {
+      this.$emit("searchresult", this.searchInGroup());
     },
   },
   computed: {
-    ...mapGetters("group", { allGroup: "allGroup" }),
+    ...mapGetters("group", { allData: "allData" }),
     ...mapGetters("roles", { allRoles: "allRoles" }),
     ...mapGetters("group", { globalId: "globalId" }),
-    ...mapGetters("group", { groupGlobalArr: "groupGlobalArr" }),
-    ...mapGetters("group", { inputGlobalVal: "inputGlobalVal" }),
-    ...mapGetters("group", { searchTypeGlobal: "searchTypeGlobal" }),
-    ...mapGetters("group", { arrForDisplay: "arrForDisplay" }),
     ...mapGetters("group", { page: "page" }),
   },
   watch: {
@@ -102,4 +107,18 @@ export default {
   },
 };
 </script>
-<style scoped></style>
+<style scoped>
+.search-wrap {
+  display: flex;
+}
+select {
+  margin: 0px 10px;
+}
+.btn {
+  padding: 0px 15px;
+  background: #000;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+}
+</style>

@@ -2,9 +2,9 @@
   <div class="block_list_group_and_role" ref="blockGroup">
     <div
       class="items_group_list"
-      v-for="it in dispalyGroup"
+      v-for="it in displayGroup"
       :key="it.id"
-      @click="fillGroupArr($event, it.id)"
+      @click="activeGroup($event, it.id)"
     >
       {{ it.title }}
       <span class="edit" @click.stop="callWindowEdit(it.id)">R</span>
@@ -13,38 +13,24 @@
       <input type="text" v-model="valueForGroup" ref="inputAddGroup" />
       <div class="input_btn_wrap">
         <div @click="addNewGroup">Add</div>
-        <div @click="inpCancel">Cancel</div>
+        <div @click="cancelInp">Cancel</div>
       </div>
     </div>
     <div class="addgroup" @click="addGroup">+ Add New Group</div>
-    <editgroup
-      :flagEdit="flagEdit"
-      :id="idForEdit"
-      @closewindowGroup="closeWindowEdit()"
-    >
-    </editgroup>
   </div>
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
-import editgroup from "..//components/editgroup.vue";
+
 export default {
-  components: {
-    editgroup,
-  },
   data: function () {
     return {
       valueForGroup: "",
       flagInputGroup: false,
-      flagEdit: false,
-      idForEdit: null,
+      searchArr: [],
     };
   },
   methods: {
-    ...mapActions("group", { newGlobalId: "newGlobalId" }),
-    ...mapActions("group", { newGlobalArr: "newGlobalArr" }),
-    ...mapActions("group", { pageNumbers: "pageNumbers" }),
-    ...mapActions("group", { setPages: "setPages" }),
     paginate(arr) {
       let page = this.page;
       let itemsPerPage = this.itemsPerPage;
@@ -52,11 +38,11 @@ export default {
       let to = page * itemsPerPage;
       return arr.slice(from, to);
     },
-    fillGroupArr(event, ind) {
-      this.activeGroup(event);
-      this.newGlobalId(ind);
+    activeGroup(event, ind) {
+      this.selectActiveGroup(event);
+      this.$emit("activegroup", ind);
     },
-    activeGroup(event) {
+    selectActiveGroup(event) {
       let arr = [...this.$refs.blockGroup.children];
       arr.forEach((el) => {
         if (el.classList.contains("items_group_list")) {
@@ -71,52 +57,48 @@ export default {
         this.$refs.inputAddGroup.focus();
       });
     },
-    addNewGroup() {
+    createObj() {
       if (this.valueForGroup != "") {
         let obj = {};
-        if (this.groupGlobalArr.length > 0) {
-          let arr = this.groupGlobalArr;
-          obj.id = arr[arr.length - 1].id + 1;
+        if (this.allData.length > 0) {
+          let data = this.allData;
+          obj.id = data[data.length - 1].id + 1;
         } else {
           obj.id = 1;
         }
         obj.title = this.valueForGroup;
         obj.roles = [];
         obj.accessright = [];
-        this.allGroup.push(obj);
-        this.flagInputGroup = false;
-        this.valueForGroup = "";
-        this.newGlobalArr(this.allGroup);
-        this.setPages();
+        return obj;
       }
     },
-    inpCancel() {
+    addNewGroup() {
+      this.$emit("addgroup", this.createObj());
+      this.flagInputGroup = false;
+      this.valueForGroup = "";
+    },
+    cancelInp() {
       this.valueForGroup = "";
       this.flagInputGroup = false;
     },
-    callWindowEdit(ind) {
-      this.idForEdit = ind;
-      this.flagEdit = true;
-    },
-    closeWindowEdit() {
-      this.flagEdit = false;
+    callWindowEdit(id) {
+      this.$emit("calleditwindow", id);
     },
   },
   computed: {
-    ...mapGetters("group", { globalId: "globalId" }),
-    ...mapGetters("group", { allGroup: "allGroup" }),
-    ...mapGetters("group", { groupGlobalArr: "groupGlobalArr" }),
+    ...mapGetters("group", { allData: "allData" }),
+    ...mapGetters("group", { searchResultData: "searchResultData" }),
     ...mapGetters("group", { itemsPerPage: "itemsPerPage" }),
     ...mapGetters("group", { pages: "pages" }),
     ...mapGetters("group", { page: "page" }),
-    dispalyGroup() {
-      return this.paginate(this.groupGlobalArr);
+    displayGroup() {
+      // return this.paginate(this.allData);
+      if (this.searchResultData.length > 0) {
+        return this.paginate(this.searchResultData);
+      } else {
+        return this.paginate(this.allData);
+      }
     },
-  },
-
-  mounted() {
-    this.newGlobalArr(this.allGroup);
-    this.setPages();
   },
 };
 </script>

@@ -7,7 +7,7 @@
             <h1>Permissions</h1>
           </div>
           <div class="search_block">
-            <searchcomp></searchcomp>
+            <searchcomp @searchresult="searchResult($event)"></searchcomp>
           </div>
         </div>
         <hr />
@@ -17,7 +17,12 @@
       <div class="items_main_content">
         <span class="title_block">Group</span>
         <div class="line"></div>
-        <groupcomp> </groupcomp>
+        <groupcomp
+          @addgroup="groupAdd($event)"
+          @activegroup="activeGroup($event)"
+          @calleditwindow="callEditGroup($event)"
+        >
+        </groupcomp>
       </div>
 
       <div class="items_main_content">
@@ -32,19 +37,28 @@
       </div>
     </section>
     <div class="block_pagination">
-      <paginationcomp></paginationcomp>
+      <paginationcomp @pagetransition="pageTransition($event)"></paginationcomp>
     </div>
 
     <rolesaddcomp
       :flagRole="flagRolesWindow"
+      @rolesadd="rolesAdd($event)"
       @closewindowrol="closeWindowRoles()"
     >
     </rolesaddcomp>
     <accessaddcomp
       :flagAccess="flagAccessWindow"
+      @addaccess="addAccess($event)"
       @closewindowAcc="closeWindowAccess()"
     >
     </accessaddcomp>
+    <editgroup
+      :flagEdit="flagEdit"
+      @addtitle="titleAdd($event)"
+      @delgroup="groupDel()"
+      @closeeditwindow="closeEditGroup()"
+    >
+    </editgroup>
   </div>
 </template>
 <script>
@@ -56,6 +70,7 @@ import accesscomp from "./components/accesscomp.vue";
 import accessaddcomp from "./components/accessaddcopm.vue";
 import searchcomp from "./components/searchcomp.vue";
 import paginationcomp from "./components/paginationcomp.vue";
+import editgroup from "./components/editgroup.vue";
 export default {
   components: {
     rolesaddcomp,
@@ -65,17 +80,27 @@ export default {
     accessaddcomp,
     searchcomp,
     paginationcomp,
+    editgroup,
   },
   data: function () {
     return {
       flagRolesWindow: false,
       flagAccessWindow: false,
+      flagEdit: false,
     };
   },
   methods: {
-    ...mapActions("group", { newGlobalArr: "newGlobalArr" }),
+    ...mapActions("group", { newSearchData: "newSearchData" }),
     ...mapActions("group", { extractData: "extractData" }),
-    ...mapActions("group", { newData: "newData" }),
+    ...mapActions("group", { newGlobalId: "newGlobalId" }),
+    ...mapActions("group", { addRolesInGroup: "addRolesInGroup" }),
+    ...mapActions("group", { addAccessInGroup: "addAccessInGroup" }),
+    ...mapActions("group", { addNewTitle: "addNewTitle" }),
+    ...mapActions("group", { deleteGroup: "deleteGroup" }),
+    ...mapActions("group", { addNewGroup: "addNewGroup" }),
+    ...mapActions("group", { setPages: "setPages" }),
+    ...mapActions("group", { pageNumbers: "pageNumbers" }),
+
     closeWindowRoles() {
       this.flagRolesWindow = false;
     },
@@ -85,16 +110,60 @@ export default {
     closeWindowAccess() {
       this.flagAccessWindow = false;
     },
+    callEditGroup(id) {
+      this.newGlobalId(id);
+      this.flagEdit = true;
+    },
+    closeEditGroup() {
+      this.flagEdit = false;
+    },
     callWindowAccess() {
       this.flagAccessWindow = true;
     },
+    rolesAdd(arr) {
+      this.addRolesInGroup(arr);
+      this.closeWindowRoles();
+    },
+    addAccess(arr) {
+      this.addAccessInGroup(arr);
+      this.closeWindowAccess();
+    },
+    titleAdd(val) {
+      this.addNewTitle(val);
+      this.closeEditGroup();
+    },
+    groupDel() {
+      this.deleteGroup();
+      this.closeEditGroup();
+    },
+    groupAdd(obj) {
+      this.addNewGroup(obj);
+    },
+    activeGroup(id) {
+      this.newGlobalId(id);
+    },
+    pageTransition(val) {
+      this.pageNumbers(val);
+    },
+    searchResult(arr) {
+      this.newSearchData(arr);
+      this.pageNumbers(1);
+      this.newGlobalId(null);
+    },
   },
   computed: {
-    ...mapGetters("group", { allGroup: "allGroup" }),
+    ...mapGetters("group", { allData: "allData" }),
   },
   created() {
     this.$nextTick(() => {
       this.extractData();
+    });
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.newGlobalId(null);
+      this.setPages();
+      this.newSearchData([]);
     });
   },
 };

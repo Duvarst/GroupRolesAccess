@@ -5,7 +5,7 @@
         class="pg_items"
         v-for="(numPage, i) in pages"
         :key="i"
-        @click="pagesClick($event, numPage)"
+        @click="pagesClick(numPage)"
       >
         {{ numPage }}
       </li>
@@ -16,15 +16,11 @@
 import { mapActions, mapGetters } from "vuex";
 export default {
   methods: {
-    ...mapActions("group", { pageNumbers: "pageNumbers" }),
-    ...mapActions("group", { setPages: "setPages" }),
-    ...mapActions("group", { newGlobalId: "newGlobalId" }),
-    pagesClick(event, val) {
-      this.pageNumbers(val);
-      this.activePage(event);
-      this.newGlobalId(null);
+    pagesClick(val) {
+      this.$emit("pagetransition", val);
+      this.activePage();
     },
-    activePage(event) {
+    activePage() {
       let arr = [...this.$refs.blockPage.children];
       arr.forEach((el) => {
         if (el.classList.contains("pg_items")) {
